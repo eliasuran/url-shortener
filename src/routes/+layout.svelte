@@ -1,5 +1,11 @@
 <script lang="ts">
 	import '../app.postcss';
+	import { LightSwitch } from '@skeletonlabs/skeleton';
 </script>
 
-<slot />
+<nav class="fixed left-6 top-6">
+	<LightSwitch />
+</nav>
+<div class="h-full flex flex-col items-center justify-center gap-6">
+	<slot />
+</div>
