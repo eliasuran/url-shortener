@@ -28,7 +28,7 @@
 				// toast must fill out this field
 				return;
 			}
-			if (!value.includes('.')) {
+			if (!value.includes('.') && index === 0) {
 				// toast invalid url
 				return;
 			}
