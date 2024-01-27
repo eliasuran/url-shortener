@@ -4,7 +4,6 @@
 
 	const sections: SectionType[] = [
 		{
-			title: 'url-shortener',
 			desc: 'Enter the url you would like to shorten',
 			placeholder: 'URL...',
 			useCase: 'url'
@@ -41,7 +40,7 @@
 {#each sections as section, i}
 	{#if i + 1 === step}
 		<Section
-			title={section.title}
+			index={i}
 			desc={section.desc}
 			placeholder={section.placeholder}
 			useCase={section.useCase}
