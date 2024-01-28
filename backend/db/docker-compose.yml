@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  db:
+    build: .
+    ports:
+      - "3250:3250"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: eliasuran
+      POSTGRES_PASSWORD: hemmelig_passord
+      POSTGRES_DB: uniform_resource_locator
+
+volumes:
+  postgres_data:

@@ -37,10 +37,9 @@ func loadENV() {
 }
 
 func connect() *pgx.Conn {
-	fmt.Println(os.Getenv("DATABASE_URL"))
 	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Println("Unable to connect to database")
+		fmt.Printf("Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
 	return conn
