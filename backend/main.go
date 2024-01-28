@@ -1,18 +1,51 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
-	http.HandleFunc("/", getURL)
-	http.HandleFunc("/set", setURL)
-	log.Fatal(http.ListenAndServe((":8080"), nil))
+	loadENV()
+	conn := connect()
+	defer conn.Close(context.Background())
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		getURL(w, r, conn)
+	})
+	http.HandleFunc("/newURL", func(w http.ResponseWriter, r *http.Request) {
+		setURL(w, r, conn)
+	})
+
+	corsHandler := cors.Default().Handler(http.DefaultServeMux)
+	port := os.Getenv("PORT")
+	log.Fatal(http.ListenAndServe(":"+port, corsHandler))
 }
 
-func getURL(w http.ResponseWriter, r *http.Request) {
+func loadENV() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
+func connect() *pgx.Conn {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Println("Unable to connect to database")
+		os.Exit(1)
+	}
+	return conn
+}
+
+func getURL(w http.ResponseWriter, r *http.Request, conn *pgx.Conn) {
 	if r.Method == "GET" {
 		fmt.Println(r.URL)
 		fmt.Fprintf(w, "Hello World!")
@@ -22,7 +55,7 @@ func getURL(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func setURL(w http.ResponseWriter, r *http.Request) {
+func setURL(w http.ResponseWriter, r *http.Request, conn *pgx.Conn) {
 	if r.Method == "POST" {
 		fmt.Println(r.URL)
 		fmt.Fprintf(w, "Hello World!")
