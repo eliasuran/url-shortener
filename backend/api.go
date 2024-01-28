@@ -37,6 +37,7 @@ func loadENV() {
 }
 
 func connect() *pgx.Conn {
+	fmt.Println(os.Getenv("DATABASE_URL"))
 	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Println("Unable to connect to database")
@@ -47,8 +48,13 @@ func connect() *pgx.Conn {
 
 func getURL(w http.ResponseWriter, r *http.Request, conn *pgx.Conn) {
 	if r.Method == "GET" {
-		fmt.Println(r.URL)
-		fmt.Fprintf(w, "Hello World!")
+		var path string
+		err := conn.QueryRow(context.Background(), "SELECT path FROM uniform_resource_locator").Scan(&path)
+		if err != nil {
+			fmt.Fprintf(w, "Error querying database: %v", err)
+			return
+		}
+		fmt.Fprintf(w, "Found: %s", path)
 		return
 	}
 	fmt.Println("Only GET is allowed")
