@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { toast } from '@zerodevx/svelte-toast';
 	import { fly } from 'svelte/transition';
+	import type { SectionType } from '../types/Sections';
 
 	export let index: number;
-	export let desc: string;
-	export let placeholder: string;
-	export let useCase: string;
+	export let sectionData: SectionType;
 	export let incrementStep: () => void;
 	export let updateValue: (useCase: string, value: string) => void;
 
@@ -21,23 +21,32 @@
 			<span class="text-secondary-400">URL</span>-<span class="text-primary-400">SHORTENER</span>
 		</div>
 	{/if}
-	<h2 class="text-2xl">{desc}</h2>
+	<h2 class="text-2xl">{sectionData.desc}</h2>
 	<form
 		on:submit={() => {
 			if (!value) {
-				// toast must fill out this field
+				toast.push('Please fill in the field');
 				return;
 			}
 			if (!value.includes('.') && index === 0) {
-				// toast invalid url
+				toast.push('Please enter a valid URL');
+				return;
+			}
+			if (sectionData.type === 'number' && isNaN(Number(value))) {
+				toast.push('Please enter a valid number');
 				return;
 			}
 			incrementStep();
-			updateValue(useCase, value);
+			updateValue(sectionData.useCase, value);
 		}}
 		class={`${index === 0 ? 'border-secondary-400' : index === 1 ? 'border-tertiary-300' : 'border-primary-400'} border-2 text-xl flex`}
 	>
-		<input class="bg-transparent outline-none w-96 pr-2 p-3" type="text" {placeholder} bind:value />
+		<input
+			class="bg-transparent outline-none w-96 pr-2 p-3"
+			type="text"
+			placeholder={sectionData.placeholder}
+			bind:value
+		/>
 		<button
 			disabled={value ? false : true}
 			class={`${value ? 'hover:bg-surface-600 text-gray-300' : 'text-gray-400 cursor-not-allowed'} h-full bg-surface-800 duration-300 p-3`}

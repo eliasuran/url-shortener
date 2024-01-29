@@ -6,17 +6,20 @@
 		{
 			desc: 'Enter the url you would like to shorten',
 			placeholder: 'URL...',
-			useCase: 'url'
+			useCase: 'url',
+			type: 'text'
 		},
 		{
 			desc: 'What do you want the path to be?',
 			placeholder: 'Path...',
-			useCase: 'path'
+			useCase: 'path',
+			type: 'text'
 		},
 		{
 			desc: 'How long would you like the url to last?',
 			placeholder: 'Time in days...',
-			useCase: 'days'
+			useCase: 'days',
+			type: 'number'
 		}
 	];
 
@@ -44,13 +47,6 @@
 
 {#each sections as section, i}
 	{#if i + 1 === step}
-		<Section
-			index={i}
-			desc={section.desc}
-			placeholder={section.placeholder}
-			useCase={section.useCase}
-			{incrementStep}
-			{updateValue}
-		/>
+		<Section index={i} sectionData={section} {incrementStep} {updateValue} />
 	{/if}
 {/each}
