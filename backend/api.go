@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -45,15 +46,33 @@ func connect() *pgx.Conn {
 	return conn
 }
 
+type URL struct {
+	Url string `json:"url"`
+}
+
 func getURL(w http.ResponseWriter, r *http.Request, conn *pgx.Conn) {
 	if r.Method == "GET" {
+		var url URL
 		var path string
-		err := conn.QueryRow(context.Background(), "SELECT path FROM uniform_resource_locator").Scan(&path)
+		path = r.URL.Path[1:]
+
+		err := conn.QueryRow(context.Background(), "SELECT url FROM uniform_resource_locator WHERE path = $1", path).Scan(&url.Url)
 		if err != nil {
-			fmt.Fprintf(w, "Error querying database: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Printf("Error querying database: %v\n", err)
 			return
 		}
-		fmt.Fprintf(w, "Found: %s", path)
+
+		w.WriteHeader(http.StatusOK)
+		json, err := json.Marshal(url)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Printf("Error marshalling JSON: %v\n", err)
+			return
+		}
+
+		w.Write(json)
+		fmt.Printf("Successfully got url: %v\n", url)
 		return
 	}
 	fmt.Println("Only GET is allowed")
