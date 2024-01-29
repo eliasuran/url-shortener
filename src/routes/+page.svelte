@@ -35,6 +35,11 @@
 		values[useCase] = value;
 		console.log(values);
 	}
+
+	import { newURL } from '$lib/backend';
+	$: if (step === 4) {
+		newURL(values);
+	}
 </script>
 
 {#each sections as section, i}
