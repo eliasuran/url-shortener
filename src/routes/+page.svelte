@@ -1,35 +1,16 @@
 <script lang="ts">
 	import Section from '../components/section.svelte';
-	import type { SectionType } from '../types/Sections';
-
-	const sections: SectionType[] = [
-		{
-			desc: 'Enter the url you would like to shorten',
-			placeholder: 'URL...',
-			useCase: 'url',
-			type: 'text'
-		},
-		{
-			desc: 'What do you want the path to be?',
-			placeholder: 'Path...',
-			useCase: 'path',
-			type: 'text'
-		},
-		{
-			desc: 'How long would you like the url to last?',
-			placeholder: 'Time in days...',
-			useCase: 'days',
-			type: 'number'
-		}
-	];
+	import { sections } from '$lib/sections';
 
 	let step: number = 1;
 	function incrementStep() {
 		step += 1;
 	}
+	function decrementStep() {
+		step -= 1;
+	}
 
-	import type { Values } from '../types/Values';
-	let values: Values = {
+	let values: { url: string; path: string; days: number } = {
 		url: '',
 		path: '',
 		days: 0
@@ -40,13 +21,20 @@
 	}
 
 	import { newURL } from '$lib/backend';
-	$: if (step === 4) {
+	$: if (step > sections.length) {
 		newURL(values);
 	}
 </script>
 
 {#each sections as section, i}
 	{#if i + 1 === step}
-		<Section index={i} sectionData={section} {incrementStep} {updateValue} />
+		<Section
+			index={i}
+			sectionData={section}
+			{values}
+			{incrementStep}
+			{decrementStep}
+			{updateValue}
+		/>
 	{/if}
 {/each}

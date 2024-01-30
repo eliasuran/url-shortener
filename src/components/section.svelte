@@ -5,10 +5,12 @@
 
 	export let index: number;
 	export let sectionData: SectionType;
+	export let values: { url: string; path: string; days: number };
 	export let incrementStep: () => void;
+	export let decrementStep: () => void;
 	export let updateValue: (useCase: string, value: string) => void;
 
-	let value: string = '';
+	let value: string = values[sectionData.useCase];
 </script>
 
 <div
@@ -22,15 +24,20 @@
 		</div>
 	{/if}
 	<h2 class="text-2xl">{sectionData.desc}</h2>
+	<h2 on:click={decrementStep} class="text-2xl">GO BACK</h2>
 	<form
 		on:submit={() => {
 			if (!value) {
 				toast.push('Please fill in the field');
 				return;
 			}
-			if (!value.includes('.') && index === 0) {
-				toast.push('Please enter a valid URL');
-				return;
+			if (sectionData.useCase === 'url') {
+				try {
+					new URL(value);
+				} catch (e) {
+					toast.push('Please enter a valid URL');
+					return;
+				}
 			}
 			if (sectionData.type === 'number' && isNaN(Number(value))) {
 				toast.push('Please enter a valid number');
