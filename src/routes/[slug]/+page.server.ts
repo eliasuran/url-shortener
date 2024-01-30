@@ -17,7 +17,5 @@ export const load: PageServerLoad = async ({ params }) => {
 		};
 	}
 
-	if (!res.ok) {
-		return { status: res.status };
-	}
+	return { status: res.status };
 };
